@@ -3,8 +3,10 @@ import plotly.express as px
 from cache_data import get_data_from_file
 from datetime import datetime as dt
 import dash_bootstrap_components as dbc
+from dash_bootstrap_templates import load_figure_template
 
 # from dash_bootstrap_templates import ThemeChangerAIO, template_from_url
+# theme = "https://cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/vapor/bootstrap.min.css"
 
 datafile = "./btc_historical"
 
@@ -19,7 +21,16 @@ Inputs: amount, date range, frequency
 Reference: https://dash-bootstrap-components.opensource.faculty.ai/docs/components/navbar/
 """
 
-PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
+LOGO = "https://rates.bitcoin.org.hk/static/images/BAHK_black_square.svg"
+
+# stylesheet with the .dbc class
+dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
+#app = Dash(external_stylesheets=[dbc.themes.CYBORG, dbc_css])
+app = Dash(external_stylesheets=[dbc.themes.VAPOR, dbc_css])
+df = get_data_from_file(datafile)
+load_figure_template(["sketchy", "cyborg", "minty", "darkly", "vapor", "slate", "superhero", "quartz"])
+template_type = "vapor"
+
 
 items_bar = dbc.Row(
     [
@@ -28,7 +39,6 @@ items_bar = dbc.Row(
         dbc.Col(dbc.NavItem(dbc.NavLink("Page3 ", href="#"))),
     ],
     className="ms-auto flex-nowrap mt-3 mt-md-0",
-    # className="g-0 ms-auto flex-nowrap mt-3 mt-md-0",
     align="center",
 )
 
@@ -39,13 +49,13 @@ navbar = dbc.Navbar(
                 # Use row and col to control vertical alignment of logo / brand
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src=PLOTLY_LOGO, height="30px")),
-                        dbc.Col(dbc.NavbarBrand("Navbar", className="ms-2")),
+                        dbc.Col(html.Img(src=LOGO, height="60px")),
+                        dbc.Col(dbc.NavbarBrand("Bitcoin HK", className="ms-2")),
                     ],
                     align="center",
                     # className="g-0",
                 ),
-                href="https://plotly.com",
+                href="https://bitcoin.org.hk",
                 style={"textDecoration": "none"},
             ),
             dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
@@ -55,20 +65,14 @@ navbar = dbc.Navbar(
                 is_open=False,
                 navbar=True,
             ),
-        ]
+        ], # className="mt-2 mb-2"
     ),
     color="dark",
     dark=True,
+    className=""
 )
 
 
-theme = "https://cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/vapor/bootstrap.min.css"
-
-# stylesheet with the .dbc class
-dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
-# app = Dash(__name__, external_stylesheets=[theme, dbc_css])
-app = Dash(external_stylesheets=[dbc.themes.CYBORG, dbc_css])
-df = get_data_from_file(datafile)
 
 
 # add callback for toggling the collapse on small screens
@@ -83,19 +87,24 @@ def toggle_navbar_collapse(n, is_open):
     return is_open
 
 
+currency_dropdown = dbc.DropdownMenu(
+    label="Currency",
+    children=[
+        dbc.DropdownMenuItem("HKD"),
+        dbc.DropdownMenuItem("USD"),
+        dbc.DropdownMenuItem("CNY"),
+    ],
+)
+
+
 amount_input = html.Div(
     [
         dbc.Label("Enter Amount: ", className="ms-2"),
         dbc.Input(size="lg", value=100, className="mb-3", type="number", id="amount", min=0, max=1000000, step=1),
+        #currency_dropdown
     ]
 )
 
-# amount_input = html.Div(
-#     [
-#         dbc.Label("Enter Amount: ", className="ms-2"),
-#         dcc.Input(id="amount", size="lg", type="number", value=100),
-#     ], # className="mt-3 mb-2 mt-md-0"
-# )
 
 inline_radioitems = html.Div(
     [
@@ -133,7 +142,7 @@ date_range = html.Div(
 footer = html.Div([
             html.A(     
                 "Source",
-                href="https://plotly.com",
+                href="https://github.com",
                 style={"textDecoration": "none"})
             ], className="mb-4")
 
@@ -145,26 +154,34 @@ app.layout = dbc.Container(
             [
                 dbc.Container(
                     [
-                        html.H1("DCA Calculator", className="mt-5 mb-4 mt-md-0"),
-                        amount_input,
-                        inline_radioitems,
-                        date_range,
+                        html.Div([
+                            html.H1("DCA Calculator", className="display-3"), 
+                            #html.H1("DCA Calculator", className="bg-primary text-white p-2 mb-2 text-center"),
+                            html.P(
+                                "Use utility classes for typography and spacing to suit the "
+                                "larger container."
+                            ),
+                            html.Hr(className="my-2"), 
+                        ], className="mt-4 mb-4"),
+                        html.Div([
+                            amount_input,
+                            inline_radioitems,
+                            date_range,    
+                        ], className=""),
                         html.Div([
                             dcc.Graph(id="graph"),
-                        ], className="mt-5 mb-4 mt-md-0" ),
+                        ]), #className="mt-5 mb-4 mt-md-0" ),
                         footer,
                     ]
                 )
             ],
-        # className="mb-4",
+        # className="mt-4 mb-4",
         ),
     ],
     fluid=True,
     className="dbc",
 )
 
-
-# theme = "https://cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/vapor/bootstrap.min.css"
 
 @app.callback(
     Output("graph", "figure"),
@@ -176,12 +193,13 @@ app.layout = dbc.Container(
 def display_area(amount, freq, start_date, end_date):
     print(amount, freq, start_date, end_date)
 
-    filtered_df = df[(df["date"] >= start_date) & (df["date"] <= end_date)]
-    fig = px.area(
-        filtered_df, x="date", y="usdsat_rate"
-    )  # , template=template_from_url(theme))
+    if amount is not None:
+        filtered_df = df[(df["date"] >= start_date) & (df["date"] <= end_date)]
+        fig = px.area(
+            filtered_df, x="date", y="usdsat_rate", template=template_type
+        )  # , template=template_from_url(theme))
 
-    return fig
+        return fig
 
 
 if __name__ == "__main__":
