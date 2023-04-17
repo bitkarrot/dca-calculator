@@ -130,3 +130,6 @@ dmypy.json
 
 # other
 *.txt
+
+.vscode
+archive
