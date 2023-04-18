@@ -13,9 +13,8 @@ x axis = date, y axis = total amount dca'd
 total = sum date start - date end of [amt * frequency]
 unit rate = fiat amt / btc rate in fiat
 frequency = (daily, weekly, monthly)
-Inputs: amount, date range, frequency
-
-Reference: https://dash-bootstrap-components.opensource.faculty.ai/docs/components/navbar/
+currency = hkd or usd
+Inputs: amount, currency, date range, frequency
 """
 
 LOGO = "https://rates.bitcoin.org.hk/static/images/BAHK_black_square.svg"
@@ -35,7 +34,8 @@ items_bar = dbc.Row(
         dbc.Col(dbc.NavItem(dbc.NavLink("Sats", href="https://sats.bitcoin.org.hk/"))),
         dbc.Col(dbc.NavItem(dbc.NavLink("Blocks", href="https://blocks.bitcoin.org.hk/"))),
     ],
-    className="ms-auto flex-nowrap mt-3 mt-md-0",
+    #className="ms-auto flex-nowrap mt-3 mt-md-0",
+    className="text-white ms-auto flex-nowrap mt-3 mt-md-0",
     align="center",
 )
 
@@ -62,14 +62,12 @@ navbar = dbc.Navbar(
                 is_open=False,
                 navbar=True,
             ),
-        ], # className="mt-2 mb-2"
+        ], 
     ),
     color="dark",
+    #color="primary",
     dark=True,
-    className=""
 )
-
-
 
 
 # add callback for toggling the collapse on small screens
@@ -84,28 +82,34 @@ def toggle_navbar_collapse(n, is_open):
     return is_open
 
 
-currency_dropdown = dbc.DropdownMenu(
-    label="Currency",
-    children=[
-        dbc.DropdownMenuItem("HKD"),
-        dbc.DropdownMenuItem("USD"),
-        dbc.DropdownMenuItem("CNY"),
-    ],
+currency_type = html.Div(
+    [
+        dbc.Label("Currency: ", className="ms-2"),
+        dbc.RadioItems(
+            options=[
+                {"label": "HKD", "value": "HKD"},
+                {"label": "USD", "value": "USD"},
+            ],
+            value="HKD",
+            id="currency",
+            inline=True,
+            className="mb-3"
+        ),
+    ], className="mt-3 mb-4 mt-md-0"
 )
 
 
 amount_input = html.Div(
     [
         dbc.Label("Enter Amount: ", className="ms-2"),
-        dbc.Input(size="lg", value=100, className="mb-3", type="number", id="amount", min=0, max=1000000, step=1),
-        #currency_dropdown
+        dbc.Input(size="lg", value=100, className="text-warning mb-3", type="number", id="amount", min=0, max=1000000, step=1),
     ]
 )
 
 
 inline_radioitems = html.Div(
     [
-        dbc.Label("Select frequency: ", className="ms-2"),
+        dbc.Label("Frequency: ", className="ms-2"),
         dbc.RadioItems(
             options=[
                 {"label": "Daily", "value": "daily"},
@@ -123,7 +127,7 @@ inline_radioitems = html.Div(
 
 date_range = html.Div(
     [
-        dbc.Label("Select Date Range: ",  className="ms-2" ),
+        dbc.Label("Date Range: ",  className="ms-2" ),
         dcc.DatePickerRange(
             id="date-picker",
             min_date_allowed=dt(2022, 1, 1),
@@ -131,7 +135,7 @@ date_range = html.Div(
             initial_visible_month=dt(2022, 1, 1),
             start_date=dt(2022, 1, 1),
             end_date=dt(2022, 12, 31),
-            className="ms-2",  
+            className="text-warning ms-2",  
         ),
     ], className="mt-3 mb-4 mt-md-0"
 )
@@ -139,56 +143,60 @@ date_range = html.Div(
 footer = html.Div([
             html.A(     
                 "Source",
-                href="https://github.com",
+                href="https://github.com/bitkarrot/dca-calculator",
                 style={"textDecoration": "none"})
             ], className="mb-4")
 
 
-app.layout = dbc.Container(
-    [
+app.layout = dbc.Container([
         navbar,
         dbc.Card(
             [
                 dbc.Container(
                     [
                         html.Div([
-                            html.H1("DCA Calculator", className="display-3"), 
+                            html.H1("DCA Calculator", className="display-3 text-warning"), 
                             #html.H1("DCA Calculator", className="bg-primary text-white p-2 mb-2 text-center"),
                             html.P(
-                                "Use utility classes for typography and spacing to suit the "
-                                "larger container."
-                            ),
-                            html.Hr(className="my-2"), 
+                                "Find out how many Sats you can Stack with this Dollar Cost Average (DCA) calculator."
+                                " Not Financial Advice, just entertainment."
+                            , className="text-white"),
+                           # html.Hr(className="my-2"), 
                         ], className="mt-4 mb-4"),
                         html.Div([
                             amount_input,
+                            currency_type,
                             inline_radioitems,
                             date_range,    
-                        ], className=""),
+                        ], className="text-white"),                    
                         html.Div([
+                            html.Div(id="stacked", className="text-warning"),
+                            dcc.Markdown(
+                                ),
                             dcc.Graph(id="graph"),
                         ]), #className="mt-5 mb-4 mt-md-0" ),
                         footer,
                     ]
                 )
             ],
-        # className="mt-4 mb-4",
-        ),
-    ],
-    fluid=True,
-    className="dbc",
-)
-
+        className="", #mt-4 mb-4",
+        ),],
+        fluid=True,
+        className="dbc",
+    )
+    
 
 @app.callback(
     Output("graph", "figure"),
+    Output("stacked", "children"),
     Input("amount", "value"),
+    Input("currency", "value"),
     Input("freq", "value"),
     Input("date-picker", "start_date"),
     Input("date-picker", "end_date"),
 )
-def display_area(amount, freq, start_date, end_date):
-    print(amount, freq, start_date, end_date)
+def display_area(amount, currency, freq, start_date, end_date):
+    print(amount, currency, freq, start_date, end_date)
 
     if amount is not None:
         # calculate dca
@@ -197,8 +205,11 @@ def display_area(amount, freq, start_date, end_date):
         fig = px.area(
             filtered_df, x="date", y="usdsat_rate", template=template_type
         )
-
-        return fig
+        
+        # content info
+        stacker_info = "You stacked: " + str(amount) + " " + str(currency) + " " + str(freq)
+        
+        return [fig, dcc.Markdown(stacker_info)]
 
 
 if __name__ == "__main__":
