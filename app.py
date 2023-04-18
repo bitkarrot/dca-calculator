@@ -4,6 +4,7 @@ from cache_data import get_data_from_file
 from datetime import datetime as dt
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
+import os
 
 datafile = "./btc_historical"
 
@@ -23,6 +24,8 @@ LOGO = "https://rates.bitcoin.org.hk/static/images/BAHK_black_square.svg"
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 #app = Dash(external_stylesheets=[dbc.themes.CYBORG, dbc_css])
 app = Dash(external_stylesheets=[dbc.themes.VAPOR, dbc_css])
+app.title='DCA'
+# app.get_asset_url("assets/favicon.png")
 server = app.server
 
 df = get_data_from_file(datafile)
@@ -177,7 +180,10 @@ app.layout = dbc.Container([
                             html.Div(id="stacked", className="text-warning"),
                             dcc.Markdown(
                                 ),
-                            dcc.Graph(id="graph"),
+                            dcc.Graph(id="graph", 
+                                      config={ 
+                                        'displayModeBar': False
+                                      }),
                         ]), #className="mt-5 mb-4 mt-md-0" ),
                         footer,
                     ]
