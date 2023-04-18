@@ -5,9 +5,6 @@ from datetime import datetime as dt
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
 
-# from dash_bootstrap_templates import ThemeChangerAIO, template_from_url
-# theme = "https://cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/vapor/bootstrap.min.css"
-
 datafile = "./btc_historical"
 
 """
@@ -34,9 +31,9 @@ template_type = "vapor"
 
 items_bar = dbc.Row(
     [
-        dbc.Col(dbc.NavItem(dbc.NavLink("Page1 ", href="#"))),
-        dbc.Col(dbc.NavItem(dbc.NavLink("Page2", href="#"))),
-        dbc.Col(dbc.NavItem(dbc.NavLink("Page3 ", href="#"))),
+        dbc.Col(dbc.NavItem(dbc.NavLink("Rates", href="https://rates.bitcoin.org.hk/"))),
+        dbc.Col(dbc.NavItem(dbc.NavLink("Sats", href="https://sats.bitcoin.org.hk/"))),
+        dbc.Col(dbc.NavItem(dbc.NavLink("Blocks", href="https://blocks.bitcoin.org.hk/"))),
     ],
     className="ms-auto flex-nowrap mt-3 mt-md-0",
     align="center",
@@ -194,10 +191,12 @@ def display_area(amount, freq, start_date, end_date):
     print(amount, freq, start_date, end_date)
 
     if amount is not None:
+        # calculate dca
         filtered_df = df[(df["date"] >= start_date) & (df["date"] <= end_date)]
+
         fig = px.area(
             filtered_df, x="date", y="usdsat_rate", template=template_type
-        )  # , template=template_from_url(theme))
+        )
 
         return fig
 
