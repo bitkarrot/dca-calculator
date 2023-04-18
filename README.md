@@ -6,9 +6,21 @@ Users can select options for daily, weekly, monthly Dollar Cost averaging of bit
 
 ## Install
 
-todo
+```sh
+
+git clone https://github.com/bitkarrot/dca-calculator.git
+cd dca-calculator
+python3 -m venv venv 
+pip install -r requirements.txt
+python3 app.py
+```
 
 ## Deploy
 
 deploy on Render.com
 
+
+```sh
+gunicorn app:server
+
+```

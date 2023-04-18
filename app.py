@@ -23,9 +23,13 @@ LOGO = "https://rates.bitcoin.org.hk/static/images/BAHK_black_square.svg"
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 #app = Dash(external_stylesheets=[dbc.themes.CYBORG, dbc_css])
 app = Dash(external_stylesheets=[dbc.themes.VAPOR, dbc_css])
+server = app.server
+
 df = get_data_from_file(datafile)
+
 load_figure_template(["sketchy", "cyborg", "minty", "darkly", "vapor", "slate", "superhero", "quartz"])
 template_type = "vapor"
+
 
 
 items_bar = dbc.Row(
@@ -201,11 +205,12 @@ def display_area(amount, currency, freq, start_date, end_date):
     if amount is not None:
         # calculate dca
         filtered_df = df[(df["date"] >= start_date) & (df["date"] <= end_date)]
+        print(filtered_df)
 
         fig = px.area(
-            filtered_df, x="date", y="usdsat_rate", template=template_type
+            filtered_df, x="date", y="sathkd_rate", template=template_type
         )
-        
+
         # content info
         stacker_info = "You stacked: " + str(amount) + " " + str(currency) + " " + str(freq)
         
