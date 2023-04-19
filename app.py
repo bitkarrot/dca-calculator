@@ -196,10 +196,10 @@ accordion = html.Div(
 
                 ],
                 title="Find out how many Sats you can Stack with this Dollar Cost Average (DCA) calculator.",
-                className="",
+                className="text-white",
 
             ),
-        ], className="text-white",
+        ], className="",
 
     )
 )
