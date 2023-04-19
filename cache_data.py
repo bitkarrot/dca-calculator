@@ -9,7 +9,7 @@ cache_data = {}
 refresh_interval = 24 * 60 * 60  # 24 hours in seconds
 
 
-def format_df(df):
+def format_df(df):    
     df["date"] = pd.to_datetime(df["date"])
     df["btcusd_rate"] = pd.to_numeric(df["btcusd_rate"])
     df["sathkd_rate"] = pd.to_numeric(df["sathkd_rate"])

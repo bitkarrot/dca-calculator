@@ -23,8 +23,17 @@ app = Dash(external_stylesheets=[dbc.themes.VAPOR, dbc_css])
 app.title = "DCA"
 server = app.server
 
-datafile = "./btc_historical"
-df = get_data_from_file(datafile)
+# datafile = "./btc_historical"
+# df = get_data_from_file(datafile)
+df = get_cached_data()
+# Find the latest date in the index
+latest_date = df.index.max()
+print(latest_date)
+
+# Check for duplicates
+duplicates = df.index.duplicated(keep="first")
+# Remove duplicate rows
+df = df[~duplicates]
 
 # df = get_cached_data()
 df_weekly = df.resample("W").last()
@@ -138,7 +147,7 @@ inline_radioitems = html.Div(
                 {"label": "Bi-weekly", "value": "bi-weekly"},
                 {"label": "Monthly", "value": "monthly"},
             ],
-            value="daily",
+            value="monthly",
             id="freq",
             inline=True,
             className="mb-3",
@@ -153,10 +162,12 @@ date_range = html.Div(
         dcc.DatePickerRange(
             id="date-picker",
             min_date_allowed=dt(2010, 7, 28),
-            max_date_allowed=dt(2023, 4, 12),
-            initial_visible_month=dt(2022, 1, 1),
+            # max_date_allowed=dt(2023, 4, 12),
+            max_date_allowed=latest_date,
+            initial_visible_month=dt(2023, 1, 1),
             start_date=dt(2022, 1, 1),
-            end_date=dt(2022, 12, 31),
+            end_date=latest_date,
+            # end_date=dt(2023, 4, 12),
             className="text-warning ms-2",
         ),
     ],
@@ -233,11 +244,12 @@ app.layout = dbc.Container(
     Input("date-picker", "end_date"),
 )
 def display_area(amount, currency, freq, start_date, end_date):
-    print(amount, currency, freq, start_date, end_date)
+    try:
+        # print(amount, currency, freq, start_date, end_date)
 
-    if amount is not None:
-        # filter by frequency
-        # df = get_cached_data()
+        if amount is None:
+            raise Exception("Amount is none")
+            # filter by frequency
 
         # date range
         f_df = df[(df.index >= start_date) & (df.index <= end_date)]
@@ -255,10 +267,11 @@ def display_area(amount, currency, freq, start_date, end_date):
             currency_col = "sathkd_rate"
 
         dfs = f_df[[currency_col]].copy()
-        dfs["Sats Stacked"] = dfs[currency_col] * amount
-        print(dfs)
+        dfs["Sats per freq"] = dfs[currency_col] * amount
+        dfs["Sats Stacked"] = dfs["Sats per freq"].cumsum()
+        # print(dfs)
 
-        total_value = dfs["Sats Stacked"].sum()
+        total_value = dfs["Sats per freq"].sum()
         btc_total = total_value / 100000000
 
         fig = px.area(dfs, x=dfs.index, y="Sats Stacked", template=template_type)
@@ -272,7 +285,13 @@ def display_area(amount, currency, freq, start_date, end_date):
             + " BTC \n\n"
         )
         stacker_info = (
-            stacker_info + "with " + str(amount) + " " + str(currency) + " " + str(freq)
+            stacker_info
+            + "with "
+            + str(amount)
+            + " "
+            + str(currency)
+            + " "
+            + str(freq)
         )
         stacker_info = (
             stacker_info
@@ -282,6 +301,9 @@ def display_area(amount, currency, freq, start_date, end_date):
             + end_date.split("T")[0]
         )
         return [fig, dcc.Markdown(stacker_info)]
+    except Exception as e:
+        print("exception")
+        # print(e)
 
 
 if __name__ == "__main__":
