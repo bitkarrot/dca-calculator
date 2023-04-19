@@ -163,12 +163,10 @@ date_range = html.Div(
         dcc.DatePickerRange(
             id="date-picker",
             min_date_allowed=dt(2010, 7, 28),
-            # max_date_allowed=dt(2023, 4, 12),
             max_date_allowed=latest_date,
             initial_visible_month=dt(2023, 1, 1),
             start_date=dt(2022, 1, 1),
             end_date=latest_date,
-            # end_date=dt(2023, 4, 12),
             className="text-warning ms-2",
         ),
     ],
@@ -186,6 +184,26 @@ footer = html.Div(
     className="mb-4",
 )
 
+accordion = html.Div(
+    dbc.Accordion(
+        [
+            dbc.AccordionItem(
+                [
+                    amount_input,
+                    currency_type,
+                    inline_radioitems,
+                    date_range,
+
+                ],
+                title="Find out how many Sats you can Stack with this Dollar Cost Average (DCA) calculator.",
+                className="text-warning",
+
+            ),
+        ], className="text-white",
+
+    )
+)
+
 
 app.layout = dbc.Container(
     [
@@ -199,19 +217,16 @@ app.layout = dbc.Container(
                                 html.H1(
                                     "DCA Calculator", className="display-3 text-warning"
                                 ),
-                                html.P(
-                                    "Find out how many Sats you can Stack with this Dollar Cost Average (DCA) calculator.",
-                                    className="text-white",
-                                ),
+                                # html.P(
+                                #     "Find out how many Sats you can Stack with this Dollar Cost Average (DCA) calculator.",
+                                #     className="text-white",
+                                # ),
                             ],
                             className="mt-4 mb-4",
                         ),
                         html.Div(
                             [
-                                amount_input,
-                                currency_type,
-                                inline_radioitems,
-                                date_range,
+                                accordion,
                             ],
                             className="text-white p-3 bg-primary bg-opacity-10",
                         ),
