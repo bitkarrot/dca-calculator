@@ -1,12 +1,16 @@
-# fly.toml file generated for dcacalc on 2023-04-18T20:19:47-07:00
+# fly.toml app configuration file generated for dcacalculator on 2023-04-18T21:58:47-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-app = "dcacalc"
+app = "dcacalculator"
 kill_signal = "SIGINT"
 kill_timeout = 5
+primary_region = "sjc"
 processes = []
 
 [build]
-  builder = "paketobuildpacks/builder:base"
+  dockerfile = "Dockerfile"
 
 [env]
   PORT = "8000"
@@ -18,7 +22,7 @@ processes = []
   autostart = true
   autostop = false
   http_checks = []
-  internal_port = 8000
+  internal_port = 8050
   processes = ["app"]
   protocol = "tcp"
   script_checks = []
