@@ -15,10 +15,15 @@ pip install -r requirements.txt
 python3 app.py
 ```
 
-## Deploy
+## Deploy on fly.io
 
-deploy on Render.com
+deploy using the Docker container with 
 
+```sh
+  fly launch --dockerfile Dockerfile
+```
+
+## Run with gunicorn
 
 ```sh
 gunicorn app:server
