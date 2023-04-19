@@ -127,7 +127,7 @@ amount_input = html.Div(
         dbc.Input(
             size="lg",
             value=100,
-            className="text-warning mb-3",
+            className="mb-3",
             type="number",
             id="amount",
             min=0,
@@ -167,7 +167,7 @@ date_range = html.Div(
             initial_visible_month=dt(2023, 1, 1),
             start_date=dt(2022, 1, 1),
             end_date=latest_date,
-            className="text-warning ms-2",
+            className="ms-2",
         ),
     ],
     className="mt-3 mb-4 mt-md-0",
@@ -196,7 +196,7 @@ accordion = html.Div(
 
                 ],
                 title="Find out how many Sats you can Stack with this Dollar Cost Average (DCA) calculator.",
-                className="text-warning",
+                className="",
 
             ),
         ], className="text-white",
@@ -292,7 +292,7 @@ def display_area(amount, currency, freq, start_date, end_date):
         fig = px.area(dfs, x=dfs.index, y="Sats Stacked", template=template_type)
 
         # update the line color
-        fig.update_traces(line_color="orange")
+        # fig.update_traces(line_color="orange")
 
         # content info
         stacker_info = (
