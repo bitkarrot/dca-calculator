@@ -184,25 +184,34 @@ footer = html.Div(
     className="mb-4",
 )
 
-accordion = html.Div(
-    dbc.Accordion(
-        [
-            dbc.AccordionItem(
-                [
+
+collapse = html.Div(
+    [
+        dbc.Collapse([
+                    html.P(
+                        "Find out how many Sats you can Stack with this Dollar Cost Average (DCA) calculator.",
+                        className="text-white",
+                    ),
                     amount_input,
                     currency_type,
                     inline_radioitems,
                     date_range,
-
                 ],
-                title="Find out how many Sats you can Stack with this Dollar Cost Average (DCA) calculator.",
-                className="text-white",
+            id="collapse",
+            is_open=True,
+        ),
+                dbc.Button(
+            "Show/Hide Calculator",
+            id="collapse-button",
+            className="mb-1",
+            color="primary",
+            n_clicks=0,
+        ),
 
-            ),
-        ], className="",
-
-    )
+    ], className="text-white",
 )
+
+             
 
 
 app.layout = dbc.Container(
@@ -226,7 +235,7 @@ app.layout = dbc.Container(
                         ),
                         html.Div(
                             [
-                                accordion,
+                                collapse,
                             ],
                             className="text-white p-3 bg-primary bg-opacity-10",
                         ),
@@ -248,6 +257,17 @@ app.layout = dbc.Container(
     fluid=True,
     className="dbc",
 )
+
+
+@app.callback(
+    Output("collapse", "is_open"),
+    [Input("collapse-button", "n_clicks")],
+    [State("collapse", "is_open")],
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 
 @app.callback(
