@@ -4,6 +4,7 @@ from cache_data import get_data_from_file, get_cached_data
 from datetime import datetime as dt
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
+from dash.exceptions import PreventUpdate
 
 """
 Bitcoin DCA calculator
@@ -249,11 +250,11 @@ def display_area(amount, currency, freq, start_date, end_date):
 
         if amount is None:
             raise Exception("Amount is none")
-            # filter by frequency
 
         # date range
         f_df = df[(df.index >= start_date) & (df.index <= end_date)]
 
+        # filter by frequency
         if freq == "weekly":
             f_df = f_df.resample("W").last()
         elif freq == "bi-weekly":
@@ -269,12 +270,14 @@ def display_area(amount, currency, freq, start_date, end_date):
         dfs = f_df[[currency_col]].copy()
         dfs["Sats per freq"] = dfs[currency_col] * amount
         dfs["Sats Stacked"] = dfs["Sats per freq"].cumsum()
-        # print(dfs)
 
         total_value = dfs["Sats per freq"].sum()
         btc_total = total_value / 100000000
 
         fig = px.area(dfs, x=dfs.index, y="Sats Stacked", template=template_type)
+
+        # update the line color
+        fig.update_traces(line_color="orange")
 
         # content info
         stacker_info = (
@@ -292,6 +295,7 @@ def display_area(amount, currency, freq, start_date, end_date):
             + str(currency)
             + " "
             + str(freq)
+            + " dollar cost averaging "
         )
         stacker_info = (
             stacker_info
@@ -302,8 +306,7 @@ def display_area(amount, currency, freq, start_date, end_date):
         )
         return [fig, dcc.Markdown(stacker_info)]
     except Exception as e:
-        print("exception")
-        # print(e)
+        raise PreventUpdate
 
 
 if __name__ == "__main__":
