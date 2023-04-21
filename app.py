@@ -8,9 +8,6 @@ from dash.exceptions import PreventUpdate
 
 """
 Bitcoin DCA calculator
-x axis = date, y axis = total amount dca'd
-total = sum date start - date end of [amt * frequency]
-unit rate = fiat amt / btc rate in fiat
 frequency = (daily, weekly, bi-weekly, monthly)
 currency = hkd or usd
 Inputs: amount, currency, date range, frequency
@@ -282,6 +279,14 @@ def toggle_collapse(n, is_open):
 def display_area(amount, currency, freq, start_date, end_date):
     try:
         # print(amount, currency, freq, start_date, end_date)
+        df = get_cached_data()
+        # Check for duplicates
+        duplicates = df.index.duplicated(keep="first")
+        # Remove duplicate rows
+        df = df[~duplicates]
+        latest_date = df.index.max()
+        print(" in display_area: " + str(latest_date))
+
 
         if amount is None:
             raise Exception("Amount is none")
