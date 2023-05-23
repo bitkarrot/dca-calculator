@@ -1,4 +1,4 @@
-requests==2.25.1
+requests==2.31.0
 dash==2.9.2
 dash_bootstrap_components==1.4.1
 dash_bootstrap_templates==1.0.8
