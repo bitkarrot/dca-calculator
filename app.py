@@ -16,10 +16,11 @@ currency = hkd or usd
 Inputs: amount, currency, date range, frequency
 """
 
-LOGO = "https://rates.bitcoin.org.hk/static/images/BAHK_black_square.svg"
+LOGO = "assets/BAHK_black_square.svg"
 
 # stylesheet with the .dbc class
-dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
+# dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
+dbc_css = "assets/dbc.min.css"
 app = Dash(__name__, external_stylesheets=[dbc.themes.VAPOR, dbc_css])
 app.title = "DCA"
 app._favicon = ("favicon.ico")
@@ -305,13 +306,8 @@ def display_area(amount, currency, freq, start_date, end_date):
         dfs["Sats per freq"] = dfs[currency_col] * amount
         dfs["Sats Stacked"] = dfs["Sats per freq"].cumsum()
 
-        print(f"size of df: {dfs.shape}")
         row_count = dfs.shape[0] # number of dcas
         total_fiat = amount * int(row_count)
-        print(f"total fiat: {total_fiat}")
-        current_fiat = 0
-        # current_fiat = btc_total * live_fiat_rate(currency) 
-        # get the rate from rates.bitcoin.org.hk API end point
 
         total_value = dfs["Sats per freq"].sum()
         btc_total = total_value / 100000000
@@ -348,12 +344,10 @@ def display_area(amount, currency, freq, start_date, end_date):
         )
         stacker_info = (
             stacker_info
-            + f"\n\n Fiat spent: "
+            + f"\n\n Total Fiat spent: "
             + '{:20,.2f}'.format(total_fiat) 
-            + f" {currency} "
-            + f"\n\nCurrent BTC value: "
-            + str(current_fiat)
-            + f" {currency} "
+            + f" {currency}.  "
+            + f"\n\n For Current BTC Exchange Rates, visit https://rates.bitcoin.org.hk/ "
         )
         return [fig, dcc.Markdown(stacker_info)]
     except Exception as e:
