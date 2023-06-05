@@ -20,8 +20,9 @@ LOGO = "https://rates.bitcoin.org.hk/static/images/BAHK_black_square.svg"
 
 # stylesheet with the .dbc class
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
-app = Dash(external_stylesheets=[dbc.themes.VAPOR, dbc_css])
+app = Dash(__name__, external_stylesheets=[dbc.themes.VAPOR, dbc_css])
 app.title = "DCA"
+app._favicon = ("favicon.ico")
 server = app.server
 
 # datafile = "./btc_historical"
