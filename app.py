@@ -30,7 +30,7 @@ server = app.server
 df = get_cached_data()
 # Find the latest date in the index
 latest_date = df.index.max()
-print(latest_date)
+#print(latest_date)
 
 # Check for duplicates
 duplicates = df.index.duplicated(keep="first")
@@ -212,8 +212,6 @@ collapse = html.Div(
     ], className="text-white",
 )
 
-             
-
 
 app.layout = dbc.Container(
     [
@@ -282,7 +280,7 @@ def toggle_collapse(n, is_open):
 )
 def display_area(amount, currency, freq, start_date, end_date):
     try:
-        # print(amount, currency, freq, start_date, end_date)
+        #print(amount, currency, freq, start_date, end_date)
 
         if amount is None:
             raise Exception("Amount is none")
@@ -307,12 +305,20 @@ def display_area(amount, currency, freq, start_date, end_date):
         dfs["Sats per freq"] = dfs[currency_col] * amount
         dfs["Sats Stacked"] = dfs["Sats per freq"].cumsum()
 
+        print(f"size of df: {dfs.shape}")
+        row_count = dfs.shape[0] # number of dcas
+        total_fiat = amount * int(row_count)
+        print(f"total fiat: {total_fiat}")
+        current_fiat = 0
+        # current_fiat = btc_total * live_fiat_rate(currency) 
+        # get the rate from rates.bitcoin.org.hk API end point
+
         total_value = dfs["Sats per freq"].sum()
         btc_total = total_value / 100000000
 
         fig = px.area(dfs, x=dfs.index, y="Sats Stacked", template=template_type)
 
-        # update the line color
+        # update the line color to orange
         # fig.update_traces(line_color="orange")
 
         # content info
@@ -339,6 +345,15 @@ def display_area(amount, currency, freq, start_date, end_date):
             + start_date.split("T")[0]
             + " to "
             + end_date.split("T")[0]
+        )
+        stacker_info = (
+            stacker_info
+            + f"\n\n Fiat spent: "
+            + '{:20,.2f}'.format(total_fiat) 
+            + f" {currency} "
+            + f"\n\nCurrent BTC value: "
+            + str(current_fiat)
+            + f" {currency} "
         )
         return [fig, dcc.Markdown(stacker_info)]
     except Exception as e:
