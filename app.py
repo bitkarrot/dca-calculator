@@ -213,10 +213,8 @@ collapse = html.Div(
     ], className="text-white",
 )
 
-
-app.layout = dbc.Container(
-    [
-         # Add the script tag to the head
+# Add the script tag to the head
+headtag =         
         html.Head(
             children=[
                 html.Script(
@@ -225,8 +223,12 @@ app.layout = dbc.Container(
                     **{"data-website-id": "6cfaea9d-4e9e-4701-95cf-f5a65bc8320d"}
                 )
             ]
-        ),
-        
+        )
+
+
+
+app.layout = dbc.Container(
+    [        
         navbar,
         dbc.Card(
             [
