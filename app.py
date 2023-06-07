@@ -213,9 +213,8 @@ collapse = html.Div(
     ], className="text-white",
 )
 
-# Add the script tag to the head
-headtag =         
-        html.Head(
+# Add the script tag to the head    
+headtag = html.Head(
             children=[
                 html.Script(
                     src="https://analytics.umami.is/script.js",
