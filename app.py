@@ -214,15 +214,15 @@ collapse = html.Div(
 )
 
 # Add the script tag to the head    
-headtag = html.Head(
-            children=[
-                html.Script(
-                    src="https://analytics.umami.is/script.js",
-                    type="text/javascript",
-                    **{"data-website-id": "6cfaea9d-4e9e-4701-95cf-f5a65bc8320d"}
-                )
-            ]
-        )
+#headtag = html.Head(
+#            children=[
+#                html.Script(
+#                    src="https://analytics.umami.is/script.js",
+#                    type="text/javascript",
+#                    **{"data-website-id": "6cfaea9d-4e9e-4701-95cf-f5a65bc8320d"}
+#                )
+#            ]
+#        )
 
 
 
