@@ -1,3 +1,5 @@
+[![Fly Deploy DCA Calculator](https://github.com/bitkarrot/dca-calculator/actions/workflows/main.yml/badge.svg)](https://github.com/bitkarrot/dca-calculator/actions/workflows/main.yml)
+
 # DCA calculator for Bitcoin
 
 This is an educational tool built with dash plotly python for dollar cost averaging of bitcoin, custom tailored for https://bitcoin.org.hk, with usd and hkd options.
